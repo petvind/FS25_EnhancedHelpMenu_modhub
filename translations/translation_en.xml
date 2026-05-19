@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+
+<!--
+    English translations for runtime UI strings used by this mod's Lua code.
+
+    Different from the <title>/<description> in modDesc.xml:
+      - modDesc translations  = store metadata (what the player sees in ModHub / in-game store)
+      - this file             = runtime strings (button labels, tooltips, notifications,
+                                menu items shown during actual gameplay)
+
+    Lua code reads these via:  g_i18n:getText("MYMOD_KEY_NAME")
+
+    Key naming convention: prefix with the mod's short name (e.g. MYMOD_*) to avoid
+    collisions with vanilla FS25 keys. UPPER_SNAKE_CASE.
+
+    Placeholders to find/replace when copying this template:
+      MYMOD       - your mod's short name prefix (e.g. FUELTRACKER, TRIPMETER)
+
+    Reference: ../../../Toolkit/modhubspecs.md §13 for L10n rules.
+-->
+
+<l10n>
+    <texts>
+        <!-- Add UI strings here as the mod gains them. Example: -->
+        <text name="MYMOD_EXAMPLE" text="An example string"/>
+    </texts>
+</l10n>

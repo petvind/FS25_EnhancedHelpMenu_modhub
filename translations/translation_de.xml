@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+
+<!--
+    German (Deutsch) translations.
+
+    Per ModHub rules: text must be UNIQUE (not a copy of EN). Every key from
+    translation_en.xml needs a corresponding DE entry. UI strings must start
+    with a capital letter.
+
+    See ../../../Toolkit/modhubspecs.md §13 for L10n rules.
+-->
+
+<l10n>
+    <texts>
+        <text name="MYMOD_EXAMPLE" text="Eine Beispielzeichenfolge"/>
+    </texts>
+</l10n>

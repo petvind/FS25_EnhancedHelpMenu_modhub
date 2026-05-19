@@ -1,0 +1,18 @@
+# .gitattributes -- Public _modhub repo
+#
+# Line-ending and binary-file handling, committed so every clone behaves
+# identically regardless of each machine's core.autocrlf setting.
+
+# ---------- Text files ----------
+# Normalize detected text files to LF in the repo AND the working copy.
+* text=auto eol=lf
+
+# ---------- Binary assets (never line-ending convert) ----------
+*.dds    binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.zip    binary
+*.i3d    binary
+*.ogg    binary
+*.wav    binary

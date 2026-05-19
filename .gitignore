@@ -1,0 +1,22 @@
+# .gitignore -- Public _modhub repo
+#
+# The public repo holds only release source mirrored from the private dev repo,
+# plus a README and issue templates. There are no working files here, so this
+# .gitignore is minimal -- just OS and editor cruft.
+
+# ---------- OS cruft ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- Editor / IDE ----------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ---------- Temporary ----------
+*.log
+*.tmp
+*.bak

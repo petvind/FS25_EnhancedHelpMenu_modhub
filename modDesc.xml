@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<modDesc descVersion="108">
+    <author>petvind</author>
+    <version>1.0.0.0</version>
+
+    <iconFilename>icon_ehm.dds</iconFilename>
+
+    <title>
+        <en>Enhanced Help Menu</en>
+        <de>Erweitertes Hilfemenü</de>
+    </title>
+
+    <description>
+        <en><![CDATA[Replaces the built-in F1 help menu with a smarter, always-visible overlay that shows every active input action and its key binding, not just the handful the game chooses to highlight.
+
+The list updates as your context changes: on foot, in a vehicle, near interactive objects, or using attachments. New actions get a subtle green accent bar and slide to the top of the list so you notice them straight away.
+
+Features:
+- Lists every active action across all connected input devices
+- Real key bindings with proper formatting (keyboard, mouse, joystick, gamepad)
+- New-action highlighting: smooth fade-in with green accent bar, auto-sorted to top
+- Long bindings wrap to a second line automatically, so nothing hides behind an ellipsis
+- Category filter (Camera, Vehicle, Driving, Lights, etc.) to narrow the list
+- Hide individual rows you've memorized. Open filter mode and click a hidden row to bring it back
+- Filter mode softly blurs the game world behind the panel for cleaner focus
+- Cycle device filter to see bindings for a specific controller
+- Pagination for long action lists
+- Settings (filters, hidden rows, display state) persist between sessions
+
+Controls (all remappable in the Controls menu):
+F1   : Cycle display (overlay only / F1 only / both hidden)
+F4   : Open or close filter (click categories to filter the list, click rows to hide them)
+F6   : Previous page
+F7   : Next page
+F10  : Cycle device filter]]></en>
+        <de><![CDATA[Ersetzt das integrierte F1-Hilfemenü durch eine intelligentere, dauerhaft sichtbare Anzeige, die jede aktive Eingabeaktion und deren Tastenbelegung zeigt, nicht nur die, die das Spiel hervorhebt.
+
+Die Liste wird aktualisiert, sobald sich der Kontext ändert: zu Fuß, in einem Fahrzeug, in der Nähe interaktiver Objekte oder bei der Verwendung von Anbaugeräten. Neue Aktionen erhalten einen dezenten grünen Akzentbalken und werden an den Anfang der Liste gesetzt, damit Sie sie sofort bemerken.
+
+Features:
+- Listet jede aktive Aktion aller angeschlossenen Eingabegeräte auf
+- Echte Tastenbelegungen mit korrekter Formatierung (Tastatur, Maus, Joystick, Gamepad)
+- Hervorhebung neuer Aktionen: weiches Einblenden mit grünem Akzentbalken, automatisch nach oben sortiert
+- Lange Tastenbelegungen werden automatisch in eine zweite Zeile umgebrochen, damit nichts hinter „...“ versteckt wird
+- Kategoriefilter (Kamera, Fahrzeug, Fahren, Licht usw.) zum Eingrenzen der Liste
+- Bereits eingeprägte Zeilen einzeln ausblenden. Filtermodus öffnen und eine ausgeblendete Zeile anklicken, um sie zurückzuholen
+- Der Filtermodus zeichnet die Spielwelt hinter der Anzeige weich für klareren Fokus
+- Eingabegerät-Filter durchschalten, um die Tastenbelegungen für einen bestimmten Controller anzuzeigen
+- Seitennavigation bei langen Aktionslisten
+- Einstellungen (Filter, ausgeblendete Zeilen, Anzeigestatus) bleiben zwischen Sitzungen erhalten
+
+Steuerung (alle in den Steuerungseinstellungen anpassbar):
+F1   : Anzeige umschalten (nur Overlay / nur F1 / beides aus)
+F4   : Filter öffnen oder schließen (Kategorien anklicken zum Filtern, Zeilen anklicken zum Ausblenden)
+F6   : Vorherige Seite
+F7   : Nächste Seite
+F10  : Eingabegerät-Filter durchschalten]]></de>
+    </description>
+
+    <multiplayer supported="true"/>
+
+    <l10n>
+        <text name="input_EHM_UI_MODE">
+            <en>Help Menu: Filter Mode</en>
+            <de>Hilfemenü: Filtermodus</de>
+        </text>
+        <text name="input_EHM_CYCLE_DEVICE">
+            <en>Help Menu: Cycle Device</en>
+            <de>Hilfemenü: Gerät durchschalten</de>
+        </text>
+        <text name="input_EHM_PAGE_PREV">
+            <en>Help Menu: Previous Page</en>
+            <de>Hilfemenü: Vorherige Seite</de>
+        </text>
+        <text name="input_EHM_PAGE_NEXT">
+            <en>Help Menu: Next Page</en>
+            <de>Hilfemenü: Nächste Seite</de>
+        </text>
+    </l10n>
+
+    <inputBinding>
+        <actionBinding action="EHM_UI_MODE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_f4" />
+        </actionBinding>
+        <actionBinding action="EHM_CYCLE_DEVICE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_f10" />
+        </actionBinding>
+        <actionBinding action="EHM_PAGE_PREV">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_f6" />
+        </actionBinding>
+        <actionBinding action="EHM_PAGE_NEXT">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_f7" />
+        </actionBinding>
+    </inputBinding>
+
+    <actions>
+        <action name="EHM_UI_MODE" />
+        <action name="EHM_CYCLE_DEVICE" />
+        <action name="EHM_PAGE_PREV" />
+        <action name="EHM_PAGE_NEXT" />
+    </actions>
+
+    <extraSourceFiles>
+        <sourceFile filename="scripts/EnhancedHelpMenu.lua"/>
+    </extraSourceFiles>
+</modDesc>
