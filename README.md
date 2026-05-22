@@ -18,6 +18,8 @@ Already finished on the dev branch, waiting for the next ModHub update. If you a
 - **German umlauts at line-truncation points** no longer render as garbled glyphs.
 - **Rounded backgrounds** for rows and pills now render correctly (v1.0.0.0 fell back to flat fallback rectangles due to an asset-path mismatch).
 - **Quieter game log** -- only genuine errors reach FS25's shared `log.txt` now; routine debug events stay in EHM's private log.
+- **In-game settings tab** -- ESC -> Settings now includes an "Enhanced Settings" tab with an "Enhanced Help Menu" group. The first setting is **Show base game F1 menu** (default OFF). Pairs with the `FS25_EnhancedGameplay` mod (same shared tab convention) so both mods' settings appear in one place.
+- **Show base game F1 menu setting** -- turn ON to use the vanilla F1 menu instead of EHM's overlay. With it ON, F1 cycles through native F1 -> EHM -> both off; with it OFF (default), F1 just toggles EHM on/off. Precision Farming widgets stay visible in either mode (they re-host inside EHM, or render on native F1 when that's the active display).
 
 ## Report a bug or suggest a feature
 
