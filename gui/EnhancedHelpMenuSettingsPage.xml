@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--
+    GUI definition for this mod's group on the shared "Enhanced Settings" tab
+    in the pause-menu Settings page. Loaded at runtime via g_gui:loadGui; the
+    bound controller is EHMSettingsFrame in scripts/EnhancedHelpMenu.lua.
+
+    The shared-tab convention is documented in ../../../Toolkit/conventions.md
+    (Shared "Enhanced Settings" tab). The tab Button + container at the top are
+    used only when EHM is the first Enhanced mod to load (it creates the tab);
+    when another mod has already created the tab, only the ScrollingLayout
+    contents (the group header + setting rows) are transplanted into the
+    existing layout via the append-only injection path.
+
+    One <Bitmap fs25_multiTextOptionContainer> block = one row. The first row
+    in the layout is the labelled group header; subsequent rows are the
+    settings themselves.
+-->
+<GUI>
+    <GuiElement profile="fs25_menuContainer">
+        <BoxLayout profile="fs25_subCategorySelectorTabbedBox">
+            <Button profile="fs25_subCategorySelectorTabbedTab" id="ehmSettingsTab" text="$l10n_EnhancedSettings_tabTitle" onClick="onClickEhmSettingsTab">
+                <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
+            </Button>
+        </BoxLayout>
+        <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="ehmSettingsPage">
+            <ScrollingLayout profile="fs25_settingsLayout" id="ehmSettingsLayout">
+                <Text profile="fs25_settingsSectionHeader" name="sectionHeader" text="$l10n_EHM_groupHeader"/>
+                <Bitmap profile="fs25_multiTextOptionContainer">
+                    <BinaryOption profile="fs25_settingsBinaryOption" onClick="onClickCheckbox" id="checkShowBaseGameHelp">
+                        <Text profile="fs25_multiTextOptionTooltip" name="ignore" text="$l10n_EHM_UI_showBaseGameHelpTooltip"/>
+                    </BinaryOption>
+                    <Text profile="fs25_settingsMultiTextOptionTitle" text="$l10n_EHM_UI_showBaseGameHelp"/>
+                </Bitmap>
+                <Bitmap profile="fs25_multiTextOptionContainer">
+                    <MultiTextOption profile="fs25_settingsMultiTextOption" onClick="onClickRowsPerPage" id="multiRowsPerPage" texts="6|8|10|12|14|16|20">
+                        <Text profile="fs25_multiTextOptionTooltip" name="ignore" text="$l10n_EHM_UI_rowsPerPageTooltip"/>
+                    </MultiTextOption>
+                    <Text profile="fs25_settingsMultiTextOptionTitle" text="$l10n_EHM_UI_rowsPerPage"/>
+                </Bitmap>
+                <Bitmap profile="fs25_multiTextOptionContainer">
+                    <MultiTextOption profile="fs25_settingsMultiTextOption" onClick="onClickWidthScale" id="multiWidthScale" texts="125%|150%|175%|200%|225%|250%|275%|300%">
+                        <Text profile="fs25_multiTextOptionTooltip" name="ignore" text="$l10n_EHM_UI_widthScaleTooltip"/>
+                    </MultiTextOption>
+                    <Text profile="fs25_settingsMultiTextOptionTitle" text="$l10n_EHM_UI_widthScale"/>
+                </Bitmap>
+            </ScrollingLayout>
+            <Bitmap profile="fs25_settingsTooltipSeparator" id="ehmSettingsSeparator"/>
+        </GuiElement>
+    </GuiElement>
+</GUI>

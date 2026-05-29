@@ -1,17 +1,62 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 
 <!--
-    German (Deutsch) translations.
+    German (Deutsch) runtime UI strings for FS25_EnhancedHelpMenu.
 
-    Per ModHub rules: text must be UNIQUE (not a copy of EN). Every key from
-    translation_en.xml needs a corresponding DE entry. UI strings must start
-    with a capital letter.
+    Per ModHub rules (Toolkit/modhubspecs.md S13): each language must contain
+    unique text and every entry must start with a capital letter. FILTER, RADIO
+    and MODS are intentionally identical to EN - they are genuine German
+    cognates, not untranslated placeholders.
 
-    See ../../../Toolkit/modhubspecs.md §13 for L10n rules.
+    Every key here must mirror a key in translation_en.xml.
 -->
 
 <l10n>
     <texts>
-        <text name="MYMOD_EXAMPLE" text="Eine Beispielzeichenfolge"/>
+        <!-- Input action labels (Controls menu) -->
+        <text name="input_EHM_UI_MODE"      text="Hilfemenü: Filtermodus"/>
+        <text name="input_EHM_CYCLE_DEVICE" text="Hilfemenü: Gerät durchschalten"/>
+        <text name="input_EHM_PAGE_PREV"    text="Hilfemenü: Vorherige Seite"/>
+        <text name="input_EHM_PAGE_NEXT"    text="Hilfemenü: Nächste Seite"/>
+
+        <!-- HUD chrome labels -->
+        <!-- EHM_UI_ACTIONS entfernt in v1.13.0.12 (Zaehlanzeige entfernt in v1.13.0.7). -->
+        <!-- EHM_UI_TOGGLE entfernt in v1.13.0.12 (TOGGLE-Pille entfernt in v1.13.0.6). -->
+        <text name="EHM_UI_PAGE"         text="SEITE"/>
+        <text name="EHM_UI_DEVICE"       text="GERÄT"/>
+        <text name="EHM_UI_FILTER"       text="FILTER"/>
+        <text name="EHM_UI_SELECT_ALL"   text="ALLE AUSWÄHLEN"/>
+        <text name="EHM_UI_DESELECT_ALL" text="ALLE ABWÄHLEN"/>
+        <text name="EHM_UI_HOLD"         text="HALTEN"/>
+        <text name="EHM_UI_TURNING"      text="Wendet"/>
+        <text name="EHM_UI_WORKING"      text="Arbeitet"/>
+        <text name="EHM_UI_KB_MOUSE"     text="Tas/Maus"/>
+        <text name="EHM_UI_ALL_DEVICES"  text="ALLE"/>
+
+        <!-- Enhanced Settings tab (shared cross-mod convention — see
+             ../../../Toolkit/conventions.md "Shared Enhanced Settings tab") -->
+        <text name="EnhancedSettings_tabTitle"           text="Erweiterte Einstellungen"/>
+        <text name="EHM_groupHeader"                     text="ERWEITERTES HILFEMENÜ"/>
+        <text name="EHM_UI_showBaseGameHelp"             text="Natives Hilfemenü anzeigen"/>
+        <text name="EHM_UI_showBaseGameHelpTooltip"      text="AN: wechselt zwischen EHM, beide ausgeblendet und nativem Menü (3 Zustände). AUS (Standard): schaltet EHM nur ein/aus."/>
+        <text name="EHM_UI_rowsPerPage"                  text="Zeilen pro Seite"/>
+        <text name="EHM_UI_rowsPerPageTooltip"           text="Wie viele Zeilen auf eine Seite passen. Niedriger = kürzeres Panel, mehr Seiten. Standard 12."/>
+        <text name="EHM_UI_widthScale"                   text="Panelbreite"/>
+        <text name="EHM_UI_widthScaleTooltip"            text="Panelbreite als Prozentsatz des nativen Hilfemenüs. Höher = breiter. Standard 150%."/>
+
+        <!-- Filter-strip category abbreviations -->
+        <text name="EHM_CAT_CAMERA"             text="KAM"/>
+        <text name="EHM_CAT_CONSTRUCTION"       text="BAU"/>
+        <text name="EHM_CAT_CRANE"              text="KRAN"/>
+        <text name="EHM_CAT_GAME"               text="SPIEL"/>
+        <text name="EHM_CAT_PLAYER_INTERACTIVE" text="SPL INT"/>
+        <text name="EHM_CAT_PLAYER_MOVEMENT"    text="SPL BEW"/>
+        <text name="EHM_CAT_RADIO"              text="RADIO"/>
+        <text name="EHM_CAT_VEHICLE"            text="FZG"/>
+        <text name="EHM_CAT_VEHICLE_DRIVING"    text="FAHREN"/>
+        <text name="EHM_CAT_VEHICLE_GEARBOX"    text="GETR"/>
+        <text name="EHM_CAT_VEHICLE_LIGHTS"     text="LICHT"/>
+        <text name="EHM_CAT_VEHICLE_WORK"       text="ARBEIT"/>
+        <text name="EHM_CAT_MODS"               text="MODS"/>
     </texts>
 </l10n>

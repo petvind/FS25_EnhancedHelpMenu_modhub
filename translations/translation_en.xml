@@ -1,27 +1,66 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 
 <!--
-    English translations for runtime UI strings used by this mod's Lua code.
+    English runtime UI strings for FS25_EnhancedHelpMenu.
 
-    Different from the <title>/<description> in modDesc.xml:
-      - modDesc translations  = store metadata (what the player sees in ModHub / in-game store)
-      - this file             = runtime strings (button labels, tooltips, notifications,
-                                menu items shown during actual gameplay)
+    Distinct from <title>/<description> in modDesc.xml:
+      - modDesc translations  = store metadata (ModHub / in-game store listing)
+      - this file             = runtime strings shown during gameplay
 
-    Lua code reads these via:  g_i18n:getText("MYMOD_KEY_NAME")
+    Lua reads these via:  g_i18n:getText("KEY")
 
-    Key naming convention: prefix with the mod's short name (e.g. MYMOD_*) to avoid
-    collisions with vanilla FS25 keys. UPPER_SNAKE_CASE.
-
-    Placeholders to find/replace when copying this template:
-      MYMOD       - your mod's short name prefix (e.g. FUELTRACKER, TRIPMETER)
-
-    Reference: ../../../Toolkit/modhubspecs.md §13 for L10n rules.
+    Key groups:
+      input_EHM_* - input action labels (shown in the Controls menu)
+      EHM_UI_*    - HUD chrome labels
+      EHM_CAT_*   - filter-strip category abbreviations
 -->
 
 <l10n>
     <texts>
-        <!-- Add UI strings here as the mod gains them. Example: -->
-        <text name="MYMOD_EXAMPLE" text="An example string"/>
+        <!-- Input action labels (Controls menu) -->
+        <text name="input_EHM_UI_MODE"      text="Help Menu: Filter Mode"/>
+        <text name="input_EHM_CYCLE_DEVICE" text="Help Menu: Cycle Device"/>
+        <text name="input_EHM_PAGE_PREV"    text="Help Menu: Previous Page"/>
+        <text name="input_EHM_PAGE_NEXT"    text="Help Menu: Next Page"/>
+
+        <!-- HUD chrome labels -->
+        <!-- EHM_UI_ACTIONS removed in v1.13.0.12 (count rendering removed in v1.13.0.7). -->
+        <!-- EHM_UI_TOGGLE removed in v1.13.0.12 (TOGGLE pill removed in v1.13.0.6). -->
+        <text name="EHM_UI_PAGE"         text="PAGE"/>
+        <text name="EHM_UI_DEVICE"       text="DEVICE"/>
+        <text name="EHM_UI_FILTER"       text="FILTER"/>
+        <text name="EHM_UI_SELECT_ALL"   text="SELECT ALL"/>
+        <text name="EHM_UI_DESELECT_ALL" text="DESELECT ALL"/>
+        <text name="EHM_UI_HOLD"         text="HOLD"/>
+        <text name="EHM_UI_TURNING"      text="Turning"/>
+        <text name="EHM_UI_WORKING"      text="Working"/>
+        <text name="EHM_UI_KB_MOUSE"     text="KB/Mouse"/>
+        <text name="EHM_UI_ALL_DEVICES"  text="ALL"/>
+
+        <!-- Enhanced Settings tab (shared cross-mod convention — see
+             ../../../Toolkit/conventions.md "Shared Enhanced Settings tab") -->
+        <text name="EnhancedSettings_tabTitle"           text="Enhanced Settings"/>
+        <text name="EHM_groupHeader"                     text="ENHANCED HELP MENU"/>
+        <text name="EHM_UI_showBaseGameHelp"             text="Show native help menu"/>
+        <text name="EHM_UI_showBaseGameHelpTooltip"      text="ON: cycles through EHM, both hidden, and the native menu (3 states). OFF (default): just toggles EHM on/off."/>
+        <text name="EHM_UI_rowsPerPage"                  text="Rows per page"/>
+        <text name="EHM_UI_rowsPerPageTooltip"           text="How many rows fit on one page. Lower = shorter panel, more pages. Default 12."/>
+        <text name="EHM_UI_widthScale"                   text="Panel width"/>
+        <text name="EHM_UI_widthScaleTooltip"            text="Panel width as a percentage of the native help menu. Higher = wider. Default 150%."/>
+
+        <!-- Filter-strip category abbreviations -->
+        <text name="EHM_CAT_CAMERA"             text="CAM"/>
+        <text name="EHM_CAT_CONSTRUCTION"       text="BUILD"/>
+        <text name="EHM_CAT_CRANE"              text="CRANE"/>
+        <text name="EHM_CAT_GAME"               text="GAME"/>
+        <text name="EHM_CAT_PLAYER_INTERACTIVE" text="PLR INT"/>
+        <text name="EHM_CAT_PLAYER_MOVEMENT"    text="PLR MOV"/>
+        <text name="EHM_CAT_RADIO"              text="RADIO"/>
+        <text name="EHM_CAT_VEHICLE"            text="VEHICLE"/>
+        <text name="EHM_CAT_VEHICLE_DRIVING"    text="DRIVING"/>
+        <text name="EHM_CAT_VEHICLE_GEARBOX"    text="GEARBOX"/>
+        <text name="EHM_CAT_VEHICLE_LIGHTS"     text="LIGHTS"/>
+        <text name="EHM_CAT_VEHICLE_WORK"       text="WORK"/>
+        <text name="EHM_CAT_MODS"               text="MODS"/>
     </texts>
 </l10n>

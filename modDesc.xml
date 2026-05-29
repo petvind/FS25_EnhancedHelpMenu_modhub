@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="108">
     <author>petvind</author>
-    <version>1.0.0.0</version>
+    <version>1.13.0.12</version>
 
     <iconFilename>icon_ehm.dds</iconFilename>
 
@@ -16,80 +16,116 @@
 The list updates as your context changes: on foot, in a vehicle, near interactive objects, or using attachments. New actions get a subtle green accent bar and slide to the top of the list so you notice them straight away.
 
 Features:
-- Lists every active action across all connected input devices
-- Real key bindings with proper formatting (keyboard, mouse, joystick, gamepad)
-- New-action highlighting: smooth fade-in with green accent bar, auto-sorted to top
-- Long bindings wrap to a second line automatically, so nothing hides behind an ellipsis
-- Category filter (Camera, Vehicle, Driving, Lights, etc.) to narrow the list
-- Hide individual rows you've memorized. Open filter mode and click a hidden row to bring it back
+- Lists every active action across all connected input devices, with real key bindings (keyboard, mouse, joystick, gamepad) and proper formatting for combos and alternates
+- Category filter and per-row hide, for both action rows and status lines (work-mode, AI-mode, etc.); selections persist across sessions
 - Filter mode softly blurs the game world behind the panel for cleaner focus
-- Cycle device filter to see bindings for a specific controller
-- Pagination for long action lists
-- Settings (filters, hidden rows, display state) persist between sessions
+- New-action highlighting with smooth fade-in and green accent bar; auto-sorted to top
+- Long bindings wrap to a second line so nothing hides behind an ellipsis
+- Pagination for long action lists; cycle device filter (with "ALL devices" mode) when multiple devices are connected
+- Status lines for work mode and AI helper mode (with HOLD key pill and live Driving / Working / Turning / Blocked state)
+- Precision Farming combine/seeder/sprayer widgets render cleanly inside EHM (no more overlap)
+- In-game Enhanced Settings tab (ESC -> Settings) for: show native help menu (adds a 3-state F1 cycle), rows per page (6 - 20), and panel width (125% - 300%)
+- Follows the game's UI Scale setting (Display -> UI Scale) so the panel grows/shrinks alongside other HUDs
+- Full German localization
 
-Controls (all remappable in the Controls menu):
-F1   : Cycle display (overlay only / F1 only / both hidden)
-F4   : Open or close filter (click categories to filter the list, click rows to hide them)
-F6   : Previous page
-F7   : Next page
-F10  : Cycle device filter]]></en>
+Controls (defaults; all remappable in the Controls menu):
+F1            : Cycle display (overlay only / native only / both hidden)
+ALT + INS     : Open or close filter
+ALT + PGUP    : Previous page
+ALT + PGDN    : Next page
+ALT + HOME    : Cycle device filter
+
+The ALT prefix gives EHM its own non-colliding keyspace -- bare PGUP / PGDN zoom the camera as the game intended, while ALT + key drives EHM. Upgrading from an earlier version? Your existing bindings carry over -- new defaults only apply to fresh installs. Rebind in the Controls menu (Enhanced Help Menu section) any time.
+
+Changelog (since v1.0.0.0):
+- New defaults: ALT + INS / ALT + HOME / ALT + PGUP / ALT + PGDN (was F4/F10/F6/F7). Sidesteps the old PGUP/PGDN camera-zoom conflict. Existing players keep their bindings; new installs get the new defaults. All keys remain remappable, combos supported.
+- Added "Enhanced Settings" tab under ESC -> Settings, with three settings: show native help menu, rows per page (6-20), and panel width (125% - 300%).
+- Added German localization across the whole UI.
+- Added ALL-devices mode in the device cycle (shows every connected device's bindings side by side).
+- Added work-mode and AI-mode status lines, with live AI-worker state (Driving / Working / Turning / Blocked) and the HOLD-key pill.
+- Precision Farming widgets now coexist cleanly with EHM (no more overlap).
+- Panel now follows the game's UI Scale setting.
+- Header tightened: dropped the redundant TOGGLE [F1] pill, action count, and duplicate "PAGE" label.
+- Filter-mode hide/un-hide now works on header status lines too.
+- Fixed F1 cycle drifting after construction-screen visits.
+- Fixed native F1 menu occasionally leaking on top of EHM.
+- Fixed sub-pixel seam lines at non-integer UI Scale values.
+- Visual polish on chord-key and alternate-binding separators.
+
+Feedback, bug reports, and feature requests:
+https://github.com/petvind/FS25_EnhancedHelpMenu_modhub]]></en>
         <de><![CDATA[Ersetzt das integrierte F1-Hilfemenü durch eine intelligentere, dauerhaft sichtbare Anzeige, die jede aktive Eingabeaktion und deren Tastenbelegung zeigt, nicht nur die, die das Spiel hervorhebt.
 
 Die Liste wird aktualisiert, sobald sich der Kontext ändert: zu Fuß, in einem Fahrzeug, in der Nähe interaktiver Objekte oder bei der Verwendung von Anbaugeräten. Neue Aktionen erhalten einen dezenten grünen Akzentbalken und werden an den Anfang der Liste gesetzt, damit Sie sie sofort bemerken.
 
 Features:
-- Listet jede aktive Aktion aller angeschlossenen Eingabegeräte auf
-- Echte Tastenbelegungen mit korrekter Formatierung (Tastatur, Maus, Joystick, Gamepad)
+- Listet jede aktive Aktion aller angeschlossenen Eingabegeräte auf, mit echten Tastenbelegungen (Tastatur, Maus, Joystick, Gamepad) und korrekter Formatierung von Tastenkombinationen und Alternativen
+- Kategoriefilter und Zeilen-Ausblenden, sowohl für Aktionszeilen als auch für Statuszeilen (Arbeitsmodus, KI-Modus, ...); Auswahl bleibt zwischen Sitzungen erhalten
+- Filtermodus zeichnet die Spielwelt hinter der Anzeige weich für klareren Fokus
 - Hervorhebung neuer Aktionen: weiches Einblenden mit grünem Akzentbalken, automatisch nach oben sortiert
-- Lange Tastenbelegungen werden automatisch in eine zweite Zeile umgebrochen, damit nichts hinter „...“ versteckt wird
-- Kategoriefilter (Kamera, Fahrzeug, Fahren, Licht usw.) zum Eingrenzen der Liste
-- Bereits eingeprägte Zeilen einzeln ausblenden. Filtermodus öffnen und eine ausgeblendete Zeile anklicken, um sie zurückzuholen
-- Der Filtermodus zeichnet die Spielwelt hinter der Anzeige weich für klareren Fokus
-- Eingabegerät-Filter durchschalten, um die Tastenbelegungen für einen bestimmten Controller anzuzeigen
-- Seitennavigation bei langen Aktionslisten
-- Einstellungen (Filter, ausgeblendete Zeilen, Anzeigestatus) bleiben zwischen Sitzungen erhalten
+- Lange Tastenbelegungen werden in eine zweite Zeile umgebrochen, damit nichts hinter „..." versteckt wird
+- Seitennavigation bei langen Aktionslisten; Eingabegerät-Filter durchschalten (mit „ALLE Geräte"-Modus), wenn mehrere Geräte angeschlossen sind
+- Statuszeilen für Arbeitsmodus und KI-Helfer-Modus (mit HOLD-Tasten-Pille und Live-Status Fahren / Arbeiten / Wendet / Blockiert)
+- Precision Farming Mähdrescher-, Sämaschinen- und Spritzanzeigen werden sauber in EHM integriert (keine Überlappungen mehr)
+- In-Game Tab „Erweiterte Einstellungen" (ESC -> Einstellungen) für: natives Hilfemenü anzeigen (fügt 3-Zustand-F1-Wechsel hinzu), Zeilen pro Seite (6 - 20) und Panelbreite (125% - 300%)
+- Folgt der UI-Skalierung des Spiels (Anzeige -> UI-Skalierung), sodass das Panel mit anderen HUDs wächst/schrumpft
+- Vollständige deutsche Lokalisierung
 
-Steuerung (alle in den Steuerungseinstellungen anpassbar):
-F1   : Anzeige umschalten (nur Overlay / nur F1 / beides aus)
-F4   : Filter öffnen oder schließen (Kategorien anklicken zum Filtern, Zeilen anklicken zum Ausblenden)
-F6   : Vorherige Seite
-F7   : Nächste Seite
-F10  : Eingabegerät-Filter durchschalten]]></de>
+Steuerung (Standardwerte; alle in den Steuerungseinstellungen anpassbar):
+F1            : Anzeige umschalten (nur Overlay / nur natives / beides aus)
+ALT + EINFG   : Filter öffnen oder schließen
+ALT + BILD↑   : Vorherige Seite
+ALT + BILD↓   : Nächste Seite
+ALT + POS1    : Eingabegerät-Filter durchschalten
+
+Das ALT-Präfix gibt EHM einen eigenen, konfliktfreien Tastenraum -- BILD↑ / BILD↓ ohne Modifier zoomen die Kamera wie vom Spiel vorgesehen, während ALT + Taste EHM steuert. Update von einer früheren Version? Bestehende Tastenbelegungen bleiben erhalten -- neue Standardwerte gelten nur für Neuinstallationen. Jederzeit in den Steuerungseinstellungen (Abschnitt „Enhanced Help Menu") neu belegen.
+
+Changelog (seit v1.0.0.0):
+- Neue Standardwerte: ALT + EINFG / ALT + POS1 / ALT + BILD↑ / ALT + BILD↓ (vorher F4/F10/F6/F7). Behebt den alten BILD↑/BILD↓-Kamerazoom-Konflikt. Bestehende Spieler behalten ihre Tastenbelegungen; Neuinstallationen erhalten die neuen Standardwerte. Alle Tasten bleiben anpassbar, Tastenkombinationen werden unterstützt.
+- Neuer Tab „Erweiterte Einstellungen" unter ESC -> Einstellungen mit drei Optionen: natives Hilfemenü anzeigen, Zeilen pro Seite (6-20) und Panelbreite (125% - 300%).
+- Vollständige deutsche Lokalisierung der gesamten Oberfläche.
+- „ALLE Geräte"-Modus im Eingabegerät-Wechsel hinzugefügt (zeigt die Belegungen aller angeschlossenen Geräte nebeneinander).
+- Statuszeilen für Arbeitsmodus und KI-Modus hinzugefügt, mit Live-Status des KI-Arbeiters (Fahren / Arbeiten / Wendet / Blockiert) und der HOLD-Tasten-Pille.
+- Precision Farming Widgets funktionieren jetzt sauber mit EHM zusammen (keine Überlappungen mehr).
+- Panel folgt jetzt der UI-Skalierung des Spiels.
+- Header gestrafft: redundante TOGGLE-[F1]-Pille, Aktionszahl und doppelte „SEITE"-Beschriftung entfernt.
+- Ausblenden im Filtermodus funktioniert jetzt auch für Statuszeilen im Header.
+- F1-Wechsel verschiebt sich nicht mehr nach Bau-Modus-Besuchen.
+- Natives F1-Menü erscheint nicht mehr versehentlich über EHM.
+- Sub-Pixel-Nahtlinien bei nicht-ganzzahligen UI-Skalierungswerten behoben.
+- Visueller Feinschliff an den Trennzeichen für Tastenkombinationen und alternative Belegungen.
+
+Feedback, Fehlerberichte und Funktionswünsche:
+https://github.com/petvind/FS25_EnhancedHelpMenu_modhub]]></de>
     </description>
 
     <multiplayer supported="true"/>
 
-    <l10n>
-        <text name="input_EHM_UI_MODE">
-            <en>Help Menu: Filter Mode</en>
-            <de>Hilfemenü: Filtermodus</de>
-        </text>
-        <text name="input_EHM_CYCLE_DEVICE">
-            <en>Help Menu: Cycle Device</en>
-            <de>Hilfemenü: Gerät durchschalten</de>
-        </text>
-        <text name="input_EHM_PAGE_PREV">
-            <en>Help Menu: Previous Page</en>
-            <de>Hilfemenü: Vorherige Seite</de>
-        </text>
-        <text name="input_EHM_PAGE_NEXT">
-            <en>Help Menu: Next Page</en>
-            <de>Hilfemenü: Nächste Seite</de>
-        </text>
-    </l10n>
+    <l10n filenamePrefix="translations/translation"/>
 
     <inputBinding>
+        <!-- Defaults are LALT-prefixed since v1.13.0.5 to give EHM a
+             collision-free namespace against vanilla single-key bindings.
+             The original bare-key defaults (INS / HOME / PGUP / PGDN)
+             collided with CAMERA_ZOOM_IN_OUT on PGUP/PGDN; vanilla's
+             axis fired in parallel with EHM paging. ALT-prefixed combos
+             sidestep this because FS25's axis bindings only fire when
+             no modifier is held. The raw-poll in EnhancedHelpMenu.lua
+             accepts both single-key and two-token combo bindings, so
+             players can still rebind to bare keys in Controls if they
+             prefer. F1 (TOGGLE_HELP_TEXT) is vanilla's binding, left
+             untouched. -->
         <actionBinding action="EHM_UI_MODE">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_f4" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_insert" />
         </actionBinding>
         <actionBinding action="EHM_CYCLE_DEVICE">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_f10" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_home" />
         </actionBinding>
         <actionBinding action="EHM_PAGE_PREV">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_f6" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_pageup" />
         </actionBinding>
         <actionBinding action="EHM_PAGE_NEXT">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_f7" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_pagedown" />
         </actionBinding>
     </inputBinding>
 
