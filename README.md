@@ -8,7 +8,9 @@ Install from the [Farming Simulator ModHub](https://www.farming-simulator.com/mo
 
 ## Coming in the next release
 
-Nothing queued right now — the latest features are all in the current ModHub release. When new work lands on the dev branch ahead of a ModHub update, it'll be listed here so you can check before reporting an issue that's already addressed.
+Already finished on the dev branch, waiting for the next ModHub update. If you are about to report one of these, it is already addressed:
+
+- **Keyboard-layout-aware key labels.** The panel now shows each key the way it is actually labelled on your keyboard. On non-US layouts (German QWERTZ, Norwegian, AZERTY, etc.) bindings used to display the US-QWERTY key for that position; they now match your real keycaps, including layout-specific keys like Ø / Æ / Å and ä / ö / ü.
 
 ## Report a bug or suggest a feature
 
