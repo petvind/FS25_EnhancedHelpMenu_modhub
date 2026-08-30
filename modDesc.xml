@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="108">
     <author>petvind</author>
-    <version>1.13.0.12</version>
+    <version>1.13.0.15</version>
 
     <iconFilename>icon_ehm.dds</iconFilename>
 
@@ -37,7 +37,12 @@ ALT + HOME    : Cycle device filter
 
 The ALT prefix gives EHM its own non-colliding keyspace -- bare PGUP / PGDN zoom the camera as the game intended, while ALT + key drives EHM. Upgrading from an earlier version? Your existing bindings carry over -- new defaults only apply to fresh installs. Rebind in the Controls menu (Enhanced Help Menu section) any time.
 
-Changelog (since v1.0.0.0):
+What's new in this update:
+- Key labels now match your keyboard layout. On non-US layouts (German QWERTZ, Norwegian, AZERTY, etc.) bindings used to show the US key for that position; they now show your real keycaps, including layout-specific keys like Ae/Oe/Ue and Ø / Æ / Å.
+- Controller / joystick support for the toggle and paging. Toggling the display and changing pages now work when those actions are bound to a gamepad, wheel or farmstick button, not just the keyboard.
+- Fixed: the feed mixer's "Mixing Ratio" panel (the straw/hay/silage/additive percentages) is shown again in the overlay. It was being hidden.
+
+Earlier changes (since v1.0.0.0):
 - New defaults: ALT + INS / ALT + HOME / ALT + PGUP / ALT + PGDN (was F4/F10/F6/F7). Sidesteps the old PGUP/PGDN camera-zoom conflict. Existing players keep their bindings; new installs get the new defaults. All keys remain remappable, combos supported.
 - Added "Enhanced Settings" tab under ESC -> Settings, with three settings: show native help menu, rows per page (6-20), and panel width (125% - 300%).
 - Added German localization across the whole UI.
@@ -80,7 +85,12 @@ ALT + POS1    : Eingabegerät-Filter durchschalten
 
 Das ALT-Präfix gibt EHM einen eigenen, konfliktfreien Tastenraum -- BILD↑ / BILD↓ ohne Modifier zoomen die Kamera wie vom Spiel vorgesehen, während ALT + Taste EHM steuert. Update von einer früheren Version? Bestehende Tastenbelegungen bleiben erhalten -- neue Standardwerte gelten nur für Neuinstallationen. Jederzeit in den Steuerungseinstellungen (Abschnitt „Enhanced Help Menu") neu belegen.
 
-Changelog (seit v1.0.0.0):
+Neu in diesem Update:
+- Tastenbezeichnungen entsprechen jetzt deinem Tastaturlayout. Bei nicht-US-Layouts (deutsches QWERTZ, Norwegisch, AZERTY usw.) wurde bisher die US-Taste dieser Position angezeigt; jetzt erscheinen deine echten Tastenbeschriftungen, einschließlich layout-spezifischer Tasten wie Ä/Ö/Ü und Ø / Æ / Å.
+- Controller-/Joystick-Unterstützung für Umschalten und Seitenwechsel. Das Umschalten der Anzeige und der Seitenwechsel funktionieren jetzt auch, wenn diese Aktionen auf einen Gamepad-, Lenkrad- oder Farmstick-Knopf gelegt sind, nicht nur auf die Tastatur.
+- Behoben: Das „Mischverhältnis"-Panel des Futtermischwagens (die Anteile von Stroh/Heu/Silage/Zusatz) wird wieder in der Anzeige dargestellt. Es wurde zuvor ausgeblendet.
+
+Frühere Änderungen (seit v1.0.0.0):
 - Neue Standardwerte: ALT + EINFG / ALT + POS1 / ALT + BILD↑ / ALT + BILD↓ (vorher F4/F10/F6/F7). Behebt den alten BILD↑/BILD↓-Kamerazoom-Konflikt. Bestehende Spieler behalten ihre Tastenbelegungen; Neuinstallationen erhalten die neuen Standardwerte. Alle Tasten bleiben anpassbar, Tastenkombinationen werden unterstützt.
 - Neuer Tab „Erweiterte Einstellungen" unter ESC -> Einstellungen mit drei Optionen: natives Hilfemenü anzeigen, Zeilen pro Seite (6-20) und Panelbreite (125% - 300%).
 - Vollständige deutsche Lokalisierung der gesamten Oberfläche.

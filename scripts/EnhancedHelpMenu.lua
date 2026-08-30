@@ -1733,6 +1733,32 @@ function EnhancedHelpMenu:loadMap()
         warn("WARNING: hud.addHelpExtension missing — extension hook not installed")
     end
 
+    -- Hook addInfoExtension — the SECOND native registration path for HUD
+    -- extensions, separate from addHelpExtension. Some vehicle widgets register
+    -- here instead: the mixer wagon's "MIXING RATIO" fill-type bars is the known
+    -- case (issues #5 / #6). Same object interface as help extensions
+    -- (draw(inputHelp, x, y) -> newY, plus getHeight), so it feeds the same
+    -- capture list and re-host loop. Without this hook EHM suppresses the native
+    -- help display but never captures these, so the panel vanishes entirely.
+    -- Mirrors the addHelpExtension hook above, including the setting-ON forward.
+    if g_currentMission ~= nil and g_currentMission.hud ~= nil
+       and type(g_currentMission.hud.addInfoExtension) == "function" then
+        local nativeAddInfoExtension = g_currentMission.hud.addInfoExtension
+        EnhancedHelpMenu.nativeAddInfoExtension = nativeAddInfoExtension
+        g_currentMission.hud.addInfoExtension = function(hud, extension)
+            local nativeIsTheDisplay = EnhancedHelpMenu.settings ~= nil
+                and EnhancedHelpMenu.settings.showBaseGameHelp == true
+                and EnhancedHelpMenu.toggleState == 0
+            if nativeIsTheDisplay then
+                return nativeAddInfoExtension(hud, extension)
+            end
+            EnhancedHelpMenu:captureHelpExtension(extension)
+        end
+        log("addInfoExtension hook installed")
+    else
+        warn("WARNING: hud.addInfoExtension missing — info-extension hook not installed")
+    end
+
     -- Hook InputHelpDisplay.drawVehicleSchema — it returns the Y where the
     -- native vehicle schema ends. The game draws that schema unconditionally
     -- above EHM's panel; capturing its true bottom lets EHM anchor itself
@@ -2097,194 +2123,90 @@ function EnhancedHelpMenu:onCycleDevice()
     self.refreshTimer = 0
 end
 
--- Pressed-edge filter for axis-bound keys.
---
--- EHM_PAGE_PREV / EHM_PAGE_NEXT default to PGUP / PGDN, which collide with
--- vanilla CAMERA_ZOOM_IN_OUT's keyboard axis. Once `triggerAlways = true`
--- in registerActionEvent gives EHM a seat at the table, FS25 then dispatches
--- the callback on every axis-value-change tick while the key is held -- 20+
--- fires per press. Without edge filtering, the page jumps multiple steps
--- per tap (or, on page 1 / last page, silently no-ops dozens of times,
--- looking like "nothing happened").
---
--- Solution: stash the pressed/released state per action and only react on
--- the rising edge (released -> pressed). FS25 calls the callback as
---   target:callback(actionName, inputValue, callbackState, isAnalog)
--- so inputValue is the second positional arg. Treat anything > 0.5 as
--- "pressed" -- digital keys map to 1.0 exactly; the threshold is a
--- safety margin for noisy axis hardware.
--- Page actions: raw-key polling instead of FS25 action-event dispatch.
---
--- Why: the page actions default-bind onto PGUP / PGDN, which collide with
--- vanilla CAMERA_ZOOM_IN_OUT's keyboard axis. FS25 normalizes mod keyboard
--- bindings to axisComponent="+" regardless of what modDesc declares, while
--- vanilla's PGDN binding uses axisComponent="-" -- so PGDN dispatch never
--- reaches us. Even on PGUP (matching "+"), FS25 sends our callback with
--- inputValue=1 every frame the key is held and never a release event,
--- making edge detection impossible from inside the callback alone
--- (confirmed by v1.9.1.0 diagnostic).
---
--- Solution: keep the action registered (so it still appears in the Controls
--- menu and can be rebound -- the binding is the source of truth), but
--- bypass FS25's event dispatch entirely. Each frame, look up the action's
--- current keyboard binding and poll Input.isKeyPressed directly on that
--- key. Rising-edge detection gives us clean one-shot-per-tap semantics
--- regardless of axis-flooding or arbitration.
---
--- Limitations:
---   - Two-token combos ("LALT + PGUP") are supported since v1.13.0.5 --
---     getActionKeys returns (mainKey, modifierKey) and the poll requires
---     both. Three-token combos ("LCTRL + LSHIFT + PGUP") are not supported.
---   - Non-keyboard rebinds (gamepad, mouse) are not polled. The registered
---     action-event callbacks remain wired, so those bindings get whatever
---     dispatch FS25 gives them (may or may not work depending on conflict).
---
--- The registered onPagePrev / onPageNext callbacks are kept as no-ops so
--- removing the registration code wouldn't be needed if we ever revert.
+-- (getActionKeys / isComboDown were removed in v1.13.0.14. They polled
+-- Input.isKeyPressed on the keyboard binding only, which is why gamepad /
+-- joystick bindings of the toggle and page actions were ignored (#3). Input
+-- detection is now device-agnostic via EnhancedHelpMenu:actionFiredThisFrame
+-- (below), which reads each binding's own getFrameTriggered() state.)
 
--- Look up the first usable keyboard binding for an action.
--- Returns (mainKeyId, modifierKeyId) where modifierKeyId is nil for
--- single-key bindings (e.g. bare KEY_pageup) and non-nil for two-token
--- combo bindings (e.g. "KEY_lalt KEY_pageup" -> main=KEY_pageup,
--- modifier=KEY_lalt).
---
--- Used by the raw-poll path (pollPageActions, pollF1Action). The poll
--- treats nil-modifier as "no modifier required" and a non-nil modifier
--- as "this key must be held while the main key is pressed" -- single-key
--- semantics fall out for free.
---
--- (Renamed from getActionSingleKeyId in v1.13.0.5. The old name only
--- returned single-key bindings; the new one handles two-token combos
--- too. Combo support was added to let EHM ship ALT-prefixed defaults
--- that don't collide with vanilla CAMERA_ZOOM_IN_OUT on PGUP/PGDN --
--- see v1.13.0.5 version_log + feedback_fs25_input_arbitration.md.)
---
--- Multi-modifier combos (3+ tokens, e.g. "LCTRL + LSHIFT + key") are
--- not supported; they fall through silently with both return values nil.
--- That's an acceptable limitation -- FS25's UI accepts up to two-key
--- combos for vanilla action defaults too.
-local function getActionKeys(actionName)
-    if g_inputBinding == nil or g_inputBinding.nameActions == nil then return nil, nil end
-    if Input == nil then return nil, nil end
-
-    local actionDef = g_inputBinding.nameActions[actionName]
-    if actionDef == nil and InputAction ~= nil then
-        local actionId = InputAction[actionName]
-        if actionId ~= nil then
-            actionDef = g_inputBinding.nameActions[actionId]
-        end
-    end
-    if actionDef == nil or actionDef.activeBindings == nil then return nil, nil end
-
-    for _, binding in pairs(actionDef.activeBindings) do
-        local s = binding ~= nil and binding.inputString or nil
-        if type(s) ~= "string" or s:sub(1, 4) ~= "KEY_" then
-            -- non-keyboard binding (gamepad, mouse, joystick) -- skip
-        else
-            local spaceIdx = s:find(" ", 1, true)
-            if spaceIdx == nil then
-                -- Single-key keyboard binding (e.g. "KEY_pageup")
-                local keyId = Input[s]
-                if type(keyId) == "number" then return keyId, nil end
-            else
-                -- Two-token combo (e.g. "KEY_lalt KEY_pageup").
-                -- Reject if there's a third token (multi-modifier combo).
-                local modStr  = s:sub(1, spaceIdx - 1)
-                local mainStr = s:sub(spaceIdx + 1)
-                if mainStr:find(" ", 1, true) == nil
-                   and modStr:sub(1, 4) == "KEY_"
-                   and mainStr:sub(1, 4) == "KEY_" then
-                    local modId  = Input[modStr]
-                    local mainId = Input[mainStr]
-                    if type(modId) == "number" and type(mainId) == "number" then
-                        return mainId, modId
-                    end
-                end
-            end
-        end
-    end
-    return nil, nil
-end
-
--- Returns true iff the given (mainKey, modifierKey) pair is currently
--- down. nil mainKey -> false. nil modifierKey -> ignores modifier check
--- (single-key binding semantics). Used by every raw-poll site.
-local function isComboDown(mainKey, modifierKey)
-    if mainKey == nil then return false end
-    if modifierKey ~= nil and Input.isKeyPressed(modifierKey) ~= true then return false end
-    return Input.isKeyPressed(mainKey) == true
-end
-
--- Action-event callbacks remain registered for Controls-menu visibility and
--- to give non-keyboard rebinds a chance to work via the standard dispatch
--- path. Body left empty because the keyboard path is handled by
--- pollPageActions() in update() -- moving any logic here would cause
--- double-fires for axis-flooded keys like PGUP.
+-- Registered (in onRegisterGlobalActionEvents) so the page actions appear in
+-- the Controls menu and can be rebound, but left as no-ops: paging runs from
+-- pollPageActions() below. Handling it here instead would double-fire for the
+-- PGUP / PGDN axis collision with vanilla CAMERA_ZOOM_IN_OUT, which dispatches
+-- the callback every frame the axis-flooded key is held (see v1.9.1.0
+-- diagnostic) -- the binding's own per-frame trigger state doesn't have that
+-- problem.
 function EnhancedHelpMenu:onPagePrev() end
 function EnhancedHelpMenu:onPageNext() end
 
--- Raw-key polling for the page actions. Runs once per update tick.
--- Edge-detected via per-action "was-held-last-frame" flags so each tap
--- advances exactly one page; holding the key doesn't auto-repeat (matches
--- the action-event semantics the user would expect from F4 / F10).
+-- Page navigation (EHM_PAGE_PREV / EHM_PAGE_NEXT). Runs once per update tick.
+--
+-- Uses the same device-agnostic detection as the help toggle
+-- (actionFiredThisFrame -> Binding:getFrameTriggered), so paging works on any
+-- input device -- keyboard, gamepad, joystick/farmstick, wheel (#3 sibling).
+-- getFrameTriggered is the engine's combo-aware, one-frame trigger edge, so it
+-- gives clean one-advance-per-tap semantics and is immune to the PGUP / PGDN
+-- axis-flood that forced the previous Input.isKeyPressed raw poll (which also
+-- ignored every non-keyboard binding).
 function EnhancedHelpMenu:pollPageActions()
-    if not self.isVisible then
-        -- Reset edge state so a held key released while hidden doesn't
-        -- spuriously fire on next show.
-        self._rawPagePrevHeld = false
-        self._rawPageNextHeld = false
-        return
-    end
-    if Input == nil or type(Input.isKeyPressed) ~= "function" then return end
-
-    -- Combo-aware lookup (v1.13.0.5): single-key bindings return
-    -- modifierKey=nil so the modifier check is a no-op; combo bindings
-    -- like "KEY_lalt KEY_pageup" require both keys down. Edge detection
-    -- is on the MAIN key only -- toggling the modifier while the main
-    -- key is held doesn't trigger a re-fire because the held-flag won't
-    -- have cleared back to false in between.
-    local prevMain, prevMod = getActionKeys("EHM_PAGE_PREV")
-    local nextMain, nextMod = getActionKeys("EHM_PAGE_NEXT")
-
-    local prevDown = isComboDown(prevMain, prevMod)
-    local nextDown = isComboDown(nextMain, nextMod)
-
-    if prevDown and not self._rawPagePrevHeld then
+    if not self.isVisible then return end
+    if self:actionFiredThisFrame("EHM_PAGE_PREV") then
         self.page = math.max(1, (self.page or 1) - 1)
     end
-    if nextDown and not self._rawPageNextHeld then
+    if self:actionFiredThisFrame("EHM_PAGE_NEXT") then
         self.page = math.min(self.cachedTotalPages or 1, (self.page or 1) + 1)
     end
-
-    self._rawPagePrevHeld = prevDown
-    self._rawPageNextHeld = nextDown
 end
 
--- Raw-key polling for F1 (TOGGLE_HELP_TEXT). FS25's action-event
--- dispatcher doesn't broadcast vanilla-owned actions to additional
--- registrants (tested via registerActionEvent with triggerAlways=true
--- in v1.11.2.0 -- no firing). So we poll the bound key directly, like
--- we do for PGUP / PGDN. Works for any single-key keyboard binding
--- (default KEY_f1 or rebound to a single key) AND, since v1.13.0.5,
--- any two-token combo (e.g. LSHIFT + F1) via the combo-aware
--- getActionKeys / isComboDown helpers above. Doesn't work for gamepad
--- rebinds (raw-poll is keyboard-only by design).
+-- True on the frame any active binding of `actionName` fires -- across every
+-- input device (keyboard, gamepad, joystick/farmstick, wheel, mouse).
 --
--- Combined with the native-visibility push in onF1Changed, this gives
--- correct cycle behaviour for both showBaseGameHelp ON and OFF without
--- the cycle-drift symptoms from the v1.11.0.x hook-based detection.
-function EnhancedHelpMenu:pollF1Action()
-    if not self.spawnInitDone or self.postInitCooldown > 0 then
-        self._rawF1Held = false
-        return
+-- Reads the engine's own per-binding "triggered this frame" state via
+-- Binding:getFrameTriggered(), which the input manager evaluates for every
+-- active binding each frame regardless of which mods registered the action.
+-- It is combo-aware (honours the binding's modifier/combo mask) and one-frame
+-- (true only on the press edge -- never while held, never on context entry;
+-- confirmed by the #3 input spike), so no held-state edge tracking is needed.
+function EnhancedHelpMenu:actionFiredThisFrame(actionName)
+    if g_inputBinding == nil or g_inputBinding.nameActions == nil then return false end
+    local actionDef = g_inputBinding.nameActions[actionName]
+    if actionDef == nil and InputAction ~= nil then
+        local id = InputAction[actionName]
+        if id ~= nil then actionDef = g_inputBinding.nameActions[id] end
     end
-    if Input == nil or type(Input.isKeyPressed) ~= "function" then return end
-    local mainKey, modKey = getActionKeys("TOGGLE_HELP_TEXT")
-    local down = isComboDown(mainKey, modKey)
-    if down and not self._rawF1Held then
+    if actionDef == nil or actionDef.activeBindings == nil then return false end
+    for _, binding in pairs(actionDef.activeBindings) do
+        if binding ~= nil and type(binding.getFrameTriggered) == "function" then
+            local ok, fired = pcall(binding.getFrameTriggered, binding)
+            if ok and fired == true then return true end
+        end
+    end
+    return false
+end
+
+-- Detection of the F1 / help-toggle press (TOGGLE_HELP_TEXT).
+--
+-- FS25's action-event dispatcher doesn't broadcast vanilla-owned actions to
+-- additional registrants (tested via registerActionEvent with triggerAlways
+-- in v1.11.2.0 -- the callback never fired), so EHM can't receive the toggle
+-- as an event. Instead we read the binding's own getFrameTriggered() state
+-- (see actionFiredThisFrame above). This is device-agnostic, which is what
+-- restores the toggle for gamepad / farmstick bindings (#3) -- the previous
+-- implementation polled Input.isKeyPressed on the keyboard binding only, so
+-- non-keyboard bindings of the toggle were silently ignored.
+--
+-- Combined with the native-visibility push in onF1Changed, this gives correct
+-- cycle behaviour for both showBaseGameHelp ON and OFF, and because the signal
+-- is true only on a genuine press it doesn't reopen the v1.11.0.x cycle drift
+-- that came from the old setVisible-hook detection.
+--
+-- (Page nav still uses the keyboard raw-poll in pollPageActions because of the
+-- axis-flooded PGUP / PGDN dispatch; that path is intentionally unchanged.)
+function EnhancedHelpMenu:pollF1Action()
+    if not self.spawnInitDone or self.postInitCooldown > 0 then return end
+    if self:actionFiredThisFrame("TOGGLE_HELP_TEXT") then
         self:onF1Changed()
     end
-    self._rawF1Held = down
 end
 
 -- ---------------------------------------------------------------------------
@@ -2428,25 +2350,91 @@ end
 -- Binding String Formatting
 --
 -- ALL display overrides live here — do not format elsewhere.
--- Goal: minimal changes, keep as close to raw data as possible.
 --
--- Rules applied in order:
---   1. Spaces between tokens = simultaneous keys → " + "
---      e.g. "KEY_lshift KEY_tab" → "LSHIFT + TAB"
---   2. Strip KEY_ prefix
---   3. Underscores → spaces  (e.g. "BUTTON_18" → "BUTTON 18")
---   4. Uppercase everything
+-- Per-token rules (a raw inputString is space-separated simultaneous keys,
+-- e.g. "KEY_lshift KEY_tab"):
+--   1. Curated compact label for a few layout-invariant keys (modifiers,
+--      PGUP/PGDN), matched by physical key id.
+--   2. Otherwise, for keyboard KEY_ tokens: the OS-keyboard-layout label from
+--      the engine's KeyboardHelper.getDisplayKeyName — so QWERTZ/AZERTY/etc.
+--      show the key the player actually presses (issue #4). This is the same
+--      source the vanilla F1 menu uses.
+--   3. Fallback (engine namer unavailable / glyph token): strip KEY_ prefix,
+--      underscores → spaces, uppercase — the pre-v1.13.0.13 behaviour.
+--   4. Non-keyboard tokens (mouse / joystick / gamepad): underscores → spaces,
+--      uppercase. Tokens are re-joined with " + ".
 --
--- Friendly name overrides (Step 5) — add future substitutions here,
--- matching against the already-processed uppercase string.
+-- Friendly name overrides — mouse/joystick text substitutions, applied to the
+-- joined string after per-token formatting. Add future substitutions there.
 -- ---------------------------------------------------------------------------
 
 function EnhancedHelpMenu:formatInput(s)
-    s = string.gsub(s, " ", "~")        -- protect combo spaces
-    s = string.gsub(s, "KEY_", "")      -- strip KEY_ prefix
-    s = string.gsub(s, "_", " ")        -- underscores to spaces
-    s = string.upper(s)                 -- uppercase
-    s = string.gsub(s, "~", " + ")      -- combo spaces → " + "
+    -- Curated compact labels for layout-invariant keys EHM intentionally
+    -- shortens beyond the engine's own name (modifiers + page keys). Keyed by
+    -- physical key id so they hold across every keyboard layout. Built once
+    -- and cached on the instance.
+    local overrides = self._keyLabelOverrideById
+    if overrides == nil then
+        overrides = {}
+        if Input ~= nil then
+            local names = {
+                KEY_lalt   = "LALT",   KEY_ralt     = "RALT",
+                KEY_lshift = "LSHIFT", KEY_rshift   = "RSHIFT",
+                KEY_lctrl  = "LCTRL",  KEY_rctrl    = "RCTRL",
+                KEY_pageup = "PGUP",   KEY_pagedown = "PGDN",
+            }
+            for tok, lbl in pairs(names) do
+                local id = Input[tok]
+                if type(id) == "number" then overrides[id] = lbl end
+            end
+        end
+        self._keyLabelOverrideById = overrides
+    end
+
+    -- Translate one keyboard KEY_ token to its OS-keyboard-layout label via
+    -- the engine's KeyboardHelper -- exactly what the vanilla F1 menu uses, so
+    -- QWERTZ / AZERTY / etc. render the key the player actually presses
+    -- (issue #4). Returns nil when the engine API is missing or hands back
+    -- something that isn't plain display text (empty, or a keyGlyph_* icon
+    -- token), so the caller falls back to the legacy strip-and-uppercase path.
+    local function layoutKeyLabel(token)
+        if Input == nil or KeyboardHelper == nil or KeyboardHelper.getDisplayKeyName == nil then
+            return nil
+        end
+        local keyId = Input[token]
+        if type(keyId) ~= "number" then return nil end
+        local ok, name = pcall(KeyboardHelper.getDisplayKeyName, keyId)
+        if not ok or type(name) ~= "string" or name == "" then return nil end
+        if name:find("[Gg]lyph") ~= nil then return nil end
+        return name
+    end
+
+    -- Format a single raw token (one key of a possible combo).
+    local function formatToken(token)
+        if token:sub(1, 4) == "KEY_" then
+            local keyId = (Input ~= nil) and Input[token] or nil
+            if type(keyId) == "number" and overrides[keyId] ~= nil then
+                return overrides[keyId]            -- curated compact label
+            end
+            local layout = layoutKeyLabel(token)
+            if layout ~= nil then
+                return string.upper(layout)        -- layout-aware engine label
+            end
+            -- Legacy fallback: strip KEY_, underscores -> spaces, uppercase.
+            return string.upper((token:gsub("^KEY_", ""):gsub("_", " ")))
+        end
+        -- Non-keyboard token (mouse / joystick / gamepad): no layout concern.
+        return string.upper((token:gsub("_", " ")))
+    end
+
+    -- Spaces in the raw inputString separate simultaneous keys. Format each
+    -- token independently (so keyboard keys get the layout-aware label), then
+    -- re-join the combo with " + ".
+    local labels = {}
+    for token in string.gmatch(s, "%S+") do
+        labels[#labels + 1] = formatToken(token)
+    end
+    s = table.concat(labels, " + ")
 
     -- Friendly name overrides — order is critical: longest/most-specific first
     -- to prevent partial matches corrupting later substitutions.
@@ -2466,7 +2454,9 @@ function EnhancedHelpMenu:formatInput(s)
     -- Generic numbered button (joystick / farmstick / gamepad).
     -- Applied after all mouse button substitutions so those are unaffected.
     s = string.gsub(s, "BUTTON (%d+)", "BTN %1")
-    -- Page keys — raw form has no space (KEY_pageup → PAGEUP after KEY_ strip)
+    -- Page-key safety net — normally PGUP/PGDN come from the keyId override
+    -- map above; this only fires on the legacy fallback path (KEY_pageup →
+    -- PAGEUP) when the engine namer is unavailable.
     s = string.gsub(s, "PAGEUP",   "PGUP")
     s = string.gsub(s, "PAGEDOWN", "PGDN")
 
@@ -4083,13 +4073,15 @@ end
 -- ---------------------------------------------------------------------------
 -- Captured native HUD help extensions
 --
--- captureHelpExtension is fed by the addHelpExtension hook installed in
--- loadMap: every native HUD help extension a vehicle spec registers (each
--- frame) is captured here instead of reaching the native InputHelpDisplay.
--- The list is cleared on the first capture of each new frame (detected via
--- g_time), so capturedExtensions always holds one complete frame's worth —
--- never a partial set — regardless of whether EHM's draw() runs before or
--- after the vehicle specs' onDraw. getReHostExtensions() then filters it.
+-- captureHelpExtension is fed by BOTH extension-registration hooks installed in
+-- loadMap: addHelpExtension (PF combine/seeder/sprayer, AI mode, cruise, ...)
+-- AND addInfoExtension (the mixer wagon's MIXING RATIO bars -- issues #5/#6).
+-- Every native HUD extension a vehicle spec registers (each frame) is captured
+-- here instead of reaching the native InputHelpDisplay. The list is cleared on
+-- the first capture of each new frame (detected via g_time), so
+-- capturedExtensions always holds one complete frame's worth — never a partial
+-- set — regardless of whether EHM's draw() runs before or after the vehicle
+-- specs' onDraw. getReHostExtensions() then returns it for re-hosting.
 -- ---------------------------------------------------------------------------
 function EnhancedHelpMenu:captureHelpExtension(extension)
     if extension == nil then return end
@@ -4496,6 +4488,20 @@ function EnhancedHelpMenu:draw()
                     end
                 end)
             end
+            -- Reset FS25's GLOBAL text render state after re-hosting. Native
+            -- extension draws leave it dirty -- the mixer wagon's MIXING RATIO
+            -- widget (issues #5/#6) sets ALIGN_RIGHT for its percentages and
+            -- doesn't restore it, so without this every EHM row below rendered
+            -- right-anchored and clipped off the left edge. EHM's renderers
+            -- assume ambient ALIGN_LEFT / non-bold / white, so restore that.
+            pcall(function()
+                if setTextAlignment ~= nil and RenderText ~= nil and RenderText.ALIGN_LEFT ~= nil then
+                    setTextAlignment(RenderText.ALIGN_LEFT)
+                end
+                if setTextBold ~= nil then setTextBold(false) end
+                if setTextColor ~= nil then setTextColor(1, 1, 1, 1) end
+                if setTextWrapWidth ~= nil then setTextWrapWidth(0) end
+            end)
         end
         self.measuredExtBandH = math.max(0, bandTop - exY)
     end
