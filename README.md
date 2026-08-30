@@ -8,10 +8,7 @@ Install from the [Farming Simulator ModHub](https://www.farming-simulator.com/mo
 
 ## Coming in the next release
 
-Already finished on the dev branch, waiting for the next ModHub update. If you are about to report one of these, it is already addressed:
-
-- **Keyboard-layout-aware key labels.** The panel now shows each key the way it is actually labelled on your keyboard. On non-US layouts (German QWERTZ, Norwegian, AZERTY, etc.) bindings used to display the US-QWERTY key for that position; they now match your real keycaps, including layout-specific keys like Ø / Æ / Å and ä / ö / ü.
-- **Controller / joystick support for the toggle and paging.** Toggling the help display and changing pages now work when those actions are bound to a gamepad, wheel or farmstick button (e.g. the farmstick's default help button) — previously only keyboard bindings responded. The native F1 help menu is also never locked out: the **"Show native help menu"** setting (ESC → Settings → Enhanced Settings) lets F1 cycle through EHM → the native menu → both hidden.
+Nothing queued right now — the latest improvements are all in the current ModHub release (submitted; may take a few days to appear as approved). When new work lands on the dev branch ahead of a ModHub update, it'll be listed here so you can check before reporting something that's already addressed.
 
 ## Report a bug or suggest a feature
 
