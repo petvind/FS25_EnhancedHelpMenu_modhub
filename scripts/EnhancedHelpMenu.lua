@@ -2368,7 +2368,44 @@ end
 -- joined string after per-token formatting. Add future substitutions there.
 -- ---------------------------------------------------------------------------
 
-function EnhancedHelpMenu:formatInput(s)
+-- Gamepad glyph labels: bindings the engine flags isGamepad (XInput-class
+-- controllers) get Xbox-style names instead of "BTN n". Joysticks, wheels and
+-- farmsticks are not isGamepad and keep numeric labels.
+-- Numbering derived from the default XINPUT_GAMEPAD bindings in
+-- inputBinding.xml cross-checked against the Controls menu glyphs:
+--   JUMP/MENU_ACCEPT = BUTTON_2 (A), INTERACT/MENU_BACK = BUTTON_3 (B),
+--   CROUCH/MENU_CANCEL = BUTTON_4 (Y), ENTER/MENU_ACTIVATE = BUTTON_1 (X),
+--   MENU_PAGE_PREV/NEXT = BUTTON_5/6 (LB/RB), TOGGLE_STORE = BUTTON_9,
+--   MENU = BUTTON_10, ACTIVATE_OBJECT = BUTTON_11 (LS click),
+--   CAMERA_SWITCH = BUTTON_12 (RS click), MENU_AXIS_UP_DOWN = BUTTON_17/19,
+--   MENU_AXIS_LEFT_RIGHT = BUTTON_18/20 (TURNLIGHT_RIGHT = RB+18),
+--   AXIS_RUN/ACCELERATE = AXIS_11 (RT), AXIS_BRAKE = AXIS_12 (LT).
+-- BUTTON_7, 8 and 13-16 are unbound by default and left numeric.
+EnhancedHelpMenu.GAMEPAD_LABELS = {
+    BUTTON_1  = "X",
+    BUTTON_2  = "A",
+    BUTTON_3  = "B",
+    BUTTON_4  = "Y",
+    BUTTON_5  = "LB",
+    BUTTON_6  = "RB",
+    BUTTON_9  = "VIEW",
+    BUTTON_10 = "MENU",
+    BUTTON_11 = "LS",        -- left stick click
+    BUTTON_12 = "RS",        -- right stick click
+    BUTTON_17 = "D-UP",
+    BUTTON_18 = "D-RIGHT",
+    BUTTON_19 = "D-DOWN",
+    BUTTON_20 = "D-LEFT",
+    -- Axes (token may carry a trailing + or -, re-appended by formatToken)
+    AXIS_1  = "LS X",
+    AXIS_2  = "LS Y",
+    AXIS_3  = "RS X",
+    AXIS_4  = "RS Y",
+    AXIS_11 = "RT",
+    AXIS_12 = "LT",
+}
+
+function EnhancedHelpMenu:formatInput(s, isGamepad)
     -- Curated compact labels for layout-invariant keys EHM intentionally
     -- shortens beyond the engine's own name (modifiers + page keys). Keyed by
     -- physical key id so they hold across every keyboard layout. Built once
@@ -2422,6 +2459,13 @@ function EnhancedHelpMenu:formatInput(s)
             end
             -- Legacy fallback: strip KEY_, underscores -> spaces, uppercase.
             return string.upper((token:gsub("^KEY_", ""):gsub("_", " ")))
+        end
+        -- Gamepad token: use Xbox-style glyph label when we have one.
+        if isGamepad == true then
+            local base, sign = string.match(token, "^(.-)([%+%-]?)$")
+            local lbl = EnhancedHelpMenu.GAMEPAD_LABELS[base]
+                or EnhancedHelpMenu.GAMEPAD_LABELS[string.upper(base)]
+            if lbl ~= nil then return lbl .. sign end
         end
         -- Non-keyboard token (mouse / joystick / gamepad): no layout concern.
         return string.upper((token:gsub("_", " ")))
@@ -2486,7 +2530,7 @@ function EnhancedHelpMenu:getBindings(actionName)
                 local s = binding.inputString
                 if s ~= nil and s ~= "" and not seen[s] then
                     seen[s] = true
-                    table.insert(parts, self:formatInput(s))
+                    table.insert(parts, self:formatInput(s, binding.isGamepad == true))
                 end
             end
         end
